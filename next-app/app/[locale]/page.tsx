@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getFeaturedStory, getTrendingStories, getLatestStories, getAllCategories } from '@/services/storyService';
 import StoryHero from '@/components/StoryHero';
-import TrendingStories from '@/components/TrendingStories';
+import TrendingCarousel from '@/components/TrendingCarousel';
 import StoryGrid from '@/components/StoryGrid';
 import CategoryGrid from '@/components/CategoryGrid';
 import FadeIn from '@/components/FadeIn';
@@ -44,7 +44,7 @@ export default async function HomePage({ params: { locale } }: { params: { local
             </h2>
           </div>
         </FadeIn>
-        <TrendingStories stories={trending} locale={locale} />
+        <TrendingCarousel stories={trending} locale={locale} />
       </section>
 
       {/* Latest Stories */}

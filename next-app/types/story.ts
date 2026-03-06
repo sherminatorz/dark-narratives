@@ -14,6 +14,8 @@ export interface Story {
   featured: boolean;
   trending: boolean;
   tags: string[];
+  location?: string;
+  timeline?: { date: string; title: string; description: string }[];
 }
 
 export interface PaginatedResult<T> {
