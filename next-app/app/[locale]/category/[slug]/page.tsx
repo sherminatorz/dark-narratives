@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getStoriesByCategory } from '@/services/storyService';
 import { getCategoryBySlug, getCategories } from '@/lib/api';
 import { notFound } from 'next/navigation';
@@ -36,6 +36,7 @@ export default async function CategoryPage({
   params: { locale: string; slug: string };
   searchParams: { page?: string };
 }) {
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'category' });
   const category = await getCategoryBySlug(slug);
 

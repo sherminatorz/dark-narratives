@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getStoryDetail } from '@/services/storyService';
 import { getAllStorySlugs, getSiteUrl } from '@/lib/api';
 import { notFound } from 'next/navigation';
@@ -61,6 +61,7 @@ export default async function StoryPage({
 }: {
   params: { locale: string; slug: string };
 }) {
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'story' });
   const result = await getStoryDetail(slug);
 
