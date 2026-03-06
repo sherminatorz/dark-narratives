@@ -8,6 +8,7 @@ import Link from 'next/link';
 import ReadingProgressBar from '@/components/ReadingProgressBar';
 import ShareButtons from '@/components/ShareButtons';
 import RelatedStories from '@/components/RelatedStories';
+import TimelineBlock from '@/components/TimelineBlock';
 import FadeIn from '@/components/FadeIn';
 import { locales } from '@/i18n/config';
 
@@ -108,6 +109,7 @@ export default async function StoryPage({
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 max-w-[900px]">
           <FadeIn>
@@ -117,21 +119,28 @@ export default async function StoryPage({
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold leading-tight mb-4">
               {story.title}
             </h1>
-            <div className="flex items-center gap-4 text-foreground-muted text-sm">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-foreground-muted text-sm">
+              {story.location && (
+                <span className="flex items-center gap-1.5">
+                  <span>📍</span> {story.location}
+                </span>
+              )}
+              <span className="flex items-center gap-1.5">
+                <span>⏱</span> {story.readingTime} {t('readingTime')}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span>📅</span> {new Date(story.publishedAt).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
               <div className="flex items-center gap-2">
                 <Image
                   src={story.author.avatar}
                   alt={story.author.name}
-                  width={32}
-                  height={32}
+                  width={24}
+                  height={24}
                   className="rounded-full"
                 />
-                <span>{t('by')} {story.author.name}</span>
+                <span>✍ {story.author.name}</span>
               </div>
-              <span>•</span>
-              <span>{story.readingTime} {t('readingTime')}</span>
-              <span>•</span>
-              <time>{new Date(story.publishedAt).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}</time>
             </div>
           </FadeIn>
         </div>
@@ -148,6 +157,14 @@ export default async function StoryPage({
               prose-strong:text-foreground"
             dangerouslySetInnerHTML={{ __html: story.content }}
           />
+
+          {/* Timeline */}
+          {story.timeline && story.timeline.length > 0 && (
+            <div className="mt-10">
+              <h3 className="text-xl font-display font-bold mb-6 text-crimson">Timeline</h3>
+              <TimelineBlock events={story.timeline} />
+            </div>
+          )}
         </FadeIn>
 
         {/* Share */}

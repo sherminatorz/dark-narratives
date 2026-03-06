@@ -91,6 +91,12 @@ export const stories: Story[] = [
     featured: true,
     trending: true,
     tags: ['serial-killer', 'los-angeles', '1980s'],
+    location: 'Los Angeles, California',
+    timeline: [
+      { date: 'June 28, 1985', title: 'First confirmed attack', description: 'Jennie Vincow, 79, is murdered in her Glassell Park home.' },
+      { date: 'July–August 1985', title: 'Terror escalates', description: 'A string of home invasions and murders paralyze the city.' },
+      { date: 'August 31, 1985', title: 'Ramirez captured', description: 'Residents in East Los Angeles recognize and subdue Ramirez.' },
+    ],
   },
   {
     id: '2',
@@ -108,6 +114,12 @@ export const stories: Story[] = [
     featured: false,
     trending: true,
     tags: ['zodiac', 'san-francisco', 'cipher', 'unsolved'],
+    location: 'San Francisco, California',
+    timeline: [
+      { date: 'December 20, 1968', title: 'First confirmed murders', description: 'Betty Lou Jensen and David Faraday are shot on Lake Herman Road.' },
+      { date: 'August 1, 1969', title: 'Cipher letters sent', description: 'Three Bay Area newspapers receive coded letters from the killer.' },
+      { date: 'October 13, 1969', title: 'Cab driver murdered', description: 'Paul Stine is shot in Presidio Heights; the killer escapes on foot.' },
+    ],
   },
   {
     id: '3',

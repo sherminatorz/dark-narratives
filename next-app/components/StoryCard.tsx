@@ -10,7 +10,7 @@ interface StoryCardProps {
 export default function StoryCard({ story, locale }: StoryCardProps) {
   return (
     <Link href={`/${locale}/story/${story.slug}`} className="group block">
-      <article className="bg-surface rounded-lg overflow-hidden border border-border hover:border-crimson/40 transition-all duration-300 hover:shadow-[0_0_30px_rgba(177,18,38,0.15)]">
+      <article className="bg-surface rounded-lg overflow-hidden border border-border hover:border-crimson/40 transition-all duration-300 hover:shadow-[0_0_40px_rgba(177,18,38,0.2)] hover:-translate-y-1">
         {/* Image */}
         <div className="relative aspect-[16/10] overflow-hidden">
           <Image
@@ -28,7 +28,7 @@ export default function StoryCard({ story, locale }: StoryCardProps) {
 
         {/* Content */}
         <div className="p-5">
-          <h3 className="text-lg font-display font-semibold leading-snug mb-2 group-hover:text-crimson transition-colors line-clamp-2">
+          <h3 className="text-lg font-display font-semibold leading-snug mb-2 group-hover:text-crimson group-hover:brightness-125 transition-all line-clamp-2">
             {story.title}
           </h3>
           <p className="text-foreground-muted text-sm leading-relaxed line-clamp-2 mb-4">
