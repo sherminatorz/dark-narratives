@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getStories } from '@/lib/api';
+import { getPaginatedStories } from '@/services/storyService';
 import StoryGrid from '@/components/StoryGrid';
 import PaginationControls from '@/components/Pagination';
 import FadeIn from '@/components/FadeIn';
@@ -22,9 +22,8 @@ export default async function StoriesPage({
 }) {
   const t = await getTranslations({ locale, namespace: 'stories' });
   const page = parseInt(searchParams.page || '1', 10);
-  const perPage = 9;
 
-  const result = await getStories({ page, perPage });
+  const result = await getPaginatedStories(page, 9);
 
   return (
     <div className="min-h-screen py-24 px-4 md:px-8 max-w-[1400px] mx-auto">

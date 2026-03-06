@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getStoryBySlug, getAllStorySlugs, getRelatedStories, getSiteUrl } from '@/lib/api';
+import { getStoryDetail } from '@/services/storyService';
+import { getAllStorySlugs, getSiteUrl } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,9 +23,10 @@ export async function generateMetadata({
 }: {
   params: { locale: string; slug: string };
 }): Promise<Metadata> {
-  const story = await getStoryBySlug(slug);
-  if (!story) return { title: 'Story Not Found' };
+  const result = await getStoryDetail(slug);
+  if (!result) return { title: 'Story Not Found' };
 
+  const { story } = result;
   const siteUrl = getSiteUrl();
 
   return {
@@ -60,11 +62,11 @@ export default async function StoryPage({
   params: { locale: string; slug: string };
 }) {
   const t = await getTranslations({ locale, namespace: 'story' });
-  const story = await getStoryBySlug(slug);
+  const result = await getStoryDetail(slug);
 
-  if (!story) notFound();
+  if (!result) notFound();
 
-  const related = await getRelatedStories(story);
+  const { story, related } = result;
   const siteUrl = getSiteUrl();
   const storyUrl = `${siteUrl}/${locale}/story/${slug}`;
 
