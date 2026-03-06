@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getPaginatedStories } from '@/services/storyService';
 import StoryGrid from '@/components/StoryGrid';
 import PaginationControls from '@/components/Pagination';
@@ -20,6 +20,7 @@ export default async function StoriesPage({
   params: { locale: string };
   searchParams: { page?: string };
 }) {
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'stories' });
   const page = parseInt(searchParams.page || '1', 10);
 

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getFeaturedStory, getTrendingStories, getLatestStories, getAllCategories } from '@/services/storyService';
 import StoryHero from '@/components/StoryHero';
 import TrendingStories from '@/components/TrendingStories';
@@ -19,6 +19,7 @@ export async function generateMetadata({ params: { locale } }: { params: { local
 }
 
 export default async function HomePage({ params: { locale } }: { params: { locale: string } }) {
+  setRequestLocale(locale);
   const t = await getTranslations({ locale });
 
   const [featured, trending, latest, categories] = await Promise.all([

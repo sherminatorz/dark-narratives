@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { searchStories } from '@/lib/api';
 import StoryGrid from '@/components/StoryGrid';
 import SearchBar from '@/components/SearchBar';
@@ -21,6 +21,7 @@ export default async function SearchPage({
   params: { locale: string };
   searchParams: { q?: string; page?: string };
 }) {
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'search' });
   const query = searchParams.q || '';
   const page = parseInt(searchParams.page || '1', 10);
