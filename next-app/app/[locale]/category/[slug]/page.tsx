@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getStories, getCategoryBySlug, getCategories } from '@/lib/api';
+import { getStoriesByCategory } from '@/services/storyService';
+import { getCategoryBySlug, getCategories } from '@/lib/api';
 import { notFound } from 'next/navigation';
 import StoryGrid from '@/components/StoryGrid';
 import PaginationControls from '@/components/Pagination';
@@ -8,9 +9,9 @@ import FadeIn from '@/components/FadeIn';
 import { locales } from '@/i18n/config';
 
 export async function generateStaticParams() {
-  const cats = await getCategories();
+  const categories = await getCategories();
   return locales.flatMap((locale) =>
-    cats.map((cat) => ({ locale, slug: cat.slug }))
+    categories.map((category) => ({ locale, slug: category.slug }))
   );
 }
 
@@ -41,7 +42,7 @@ export default async function CategoryPage({
   if (!category) notFound();
 
   const page = parseInt(searchParams.page || '1', 10);
-  const result = await getStories({ page, perPage: 9, category: slug });
+  const result = await getStoriesByCategory(slug, { page, perPage: 9 });
 
   return (
     <div className="min-h-screen py-24 px-4 md:px-8 max-w-[1400px] mx-auto">
