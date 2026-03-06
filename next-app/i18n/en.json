@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "Home",
+    "stories": "Stories",
+    "categories": "Categories",
+    "search": "Search",
+    "about": "About"
+  },
+  "hero": {
+    "featured": "Featured Story",
+    "readMore": "Read Full Story",
+    "minRead": "min read"
+  },
+  "home": {
+    "trending": "Trending Now",
+    "latest": "Latest Stories",
+    "categories": "Explore Categories",
+    "viewAll": "View All"
+  },
+  "story": {
+    "by": "By",
+    "published": "Published",
+    "readingTime": "min read",
+    "share": "Share this story",
+    "related": "Related Stories",
+    "backToStories": "Back to Stories"
+  },
+  "category": {
+    "storiesIn": "Stories in",
+    "allCategories": "All Categories"
+  },
+  "search": {
+    "title": "Search Stories",
+    "placeholder": "Search for stories, mysteries, cases...",
+    "results": "results found",
+    "noResults": "No stories found matching your search.",
+    "tryAgain": "Try different keywords or browse our categories."
+  },
+  "stories": {
+    "title": "All Stories",
+    "subtitle": "Explore our collection of true crime stories, unsolved mysteries, and dark tales from around the world."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of"
+  },
+  "footer": {
+    "tagline": "Exploring the darkest corners of true crime, unsolved mysteries, and real-world enigmas.",
+    "quickLinks": "Quick Links",
+    "categories": "Categories",
+    "newsletter": "Newsletter",
+    "newsletterText": "Get the latest stories delivered to your inbox.",
+    "emailPlaceholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "rights": "All rights reserved."
+  },
+  "notFound": {
+    "title": "Lost in the Shadows",
+    "message": "The page you're looking for has vanished without a trace.",
+    "backHome": "Return to Safety"
+  }
+}

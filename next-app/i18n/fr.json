@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "stories": "Histoires",
+    "categories": "Catégories",
+    "search": "Recherche",
+    "about": "À propos"
+  },
+  "hero": {
+    "featured": "Histoire à la une",
+    "readMore": "Lire l'histoire complète",
+    "minRead": "min de lecture"
+  },
+  "home": {
+    "trending": "Tendances",
+    "latest": "Dernières histoires",
+    "categories": "Explorer les catégories",
+    "viewAll": "Voir tout"
+  },
+  "story": {
+    "by": "Par",
+    "published": "Publié le",
+    "readingTime": "min de lecture",
+    "share": "Partager cette histoire",
+    "related": "Histoires similaires",
+    "backToStories": "Retour aux histoires"
+  },
+  "category": {
+    "storiesIn": "Histoires dans",
+    "allCategories": "Toutes les catégories"
+  },
+  "search": {
+    "title": "Rechercher des histoires",
+    "placeholder": "Rechercher des histoires, mystères, affaires...",
+    "results": "résultats trouvés",
+    "noResults": "Aucune histoire trouvée correspondant à votre recherche.",
+    "tryAgain": "Essayez d'autres mots-clés ou parcourez nos catégories."
+  },
+  "stories": {
+    "title": "Toutes les histoires",
+    "subtitle": "Explorez notre collection d'histoires de crimes réels, de mystères non résolus et de récits sombres du monde entier."
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page",
+    "of": "sur"
+  },
+  "footer": {
+    "tagline": "Explorer les recoins les plus sombres du vrai crime, des mystères non résolus et des énigmes du monde réel.",
+    "quickLinks": "Liens rapides",
+    "categories": "Catégories",
+    "newsletter": "Newsletter",
+    "newsletterText": "Recevez les dernières histoires dans votre boîte mail.",
+    "emailPlaceholder": "Entrez votre email",
+    "subscribe": "S'abonner",
+    "rights": "Tous droits réservés."
+  },
+  "notFound": {
+    "title": "Perdu dans les ombres",
+    "message": "La page que vous cherchez a disparu sans laisser de trace.",
+    "backHome": "Retourner en sécurité"
+  }
+}
