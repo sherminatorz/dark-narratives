@@ -95,7 +95,7 @@ export async function getAllStorySlugs(): Promise<string[]> {
     let hasNextPage = true;
 
     while (hasNextPage) {
-      const response = await fetchGraphQL<any>(GET_ALL_SLUGS_QUERY, { after }, {
+      const response: any = await fetchGraphQL<any>(GET_ALL_SLUGS_QUERY, { after }, {
         revalidate: REVALIDATE_CATEGORIES,
         tags: ['all-slugs'],
       });
