@@ -45,8 +45,9 @@ Log into WordPress Admin → ACF → Field Groups → Add New
 | Trending | trending | True/False | Yes | - |
 | Reading Time (minutes) | reading_time | Number | No | Min: 0, Max: 1000 |
 | Location | location | Text | No | - |
-| Tags | tags | Text | No | - |
 | Timeline | timeline | Repeater | No | See below |
+
+**Note on Tags:** Use WordPress's **built-in Tags taxonomy** (not a custom field). You'll assign tags when creating posts. They're automatically exposed in GraphQL.
 
 **Timeline Sub-Fields (Repeater):**
 | Sub-Field Label | Sub-Field Name | Field Type |
@@ -105,11 +106,18 @@ Log into WordPress Admin → ACF → Field Groups → Add New
         acfTrending
         acfReadingTime
         acfLocation
-        acfTags
         acfTimeline {
           date
           title
           description
+        }
+        tags(first: 5) {
+          edges {
+            node {
+              name
+              slug
+            }
+          }
         }
       }
     }
@@ -182,9 +190,15 @@ Check the browser console for any GraphQL errors and verify stories are loading.
    - Featured Image
    - Category
    - Author
-   - Fill in ACF fields (featured, trending, etc.)
+   - **Tags** (WordPress native Tags taxonomy - not ACF)
+   - Fill in ACF fields (featured, trending, location, reading time, timeline)
 
 2. Create Categories if not already present
+
+**Quick Tip:** Assign tags when editing a post:
+- Go to **Posts → Edit Post**
+- Look for **"Tags"** box on the right side
+- Add tag slugs separated by commas
 
 ## Troubleshooting
 

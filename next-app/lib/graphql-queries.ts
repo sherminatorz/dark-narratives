@@ -26,8 +26,15 @@ export const GET_POSTS_QUERY = `
           readingTime: acfReadingTime
           featured: acfFeatured
           trending: acfTrending
-          tags: acfTags
           location: acfLocation
+          tags(first: 10) {
+            edges {
+              node {
+                name
+                slug
+              }
+            }
+          }
           timeline: acfTimeline {
             date
             title
@@ -90,8 +97,15 @@ export const GET_POST_BY_SLUG_QUERY = `
       readingTime: acfReadingTime
       featured: acfFeatured
       trending: acfTrending
-      tags: acfTags
       location: acfLocation
+      tags(first: 10) {
+        edges {
+          node {
+            name
+            slug
+          }
+        }
+      }
       timeline: acfTimeline {
         date
         title
@@ -260,7 +274,6 @@ export const GET_FEATURED_POSTS_QUERY = `
           readingTime: acfReadingTime
           featured: acfFeatured
           trending: acfTrending
-          tags: acfTags
           author {
             node {
               id

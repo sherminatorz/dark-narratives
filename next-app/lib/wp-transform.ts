@@ -12,6 +12,9 @@ export function transformWPPostToStory(wpPost: any): Story {
   const category = wpPost.categories?.edges?.[0]?.node;
   const author = wpPost.author?.node;
   const featuredImage = wpPost.featured?.node;
+  
+  // Extract tags from WordPress native tags (not ACF)
+  const tagsList = wpPost.tags?.edges?.map((edge: any) => edge.node.slug) || [];
 
   return {
     id: wpPost.databaseId?.toString(),
@@ -38,7 +41,7 @@ export function transformWPPostToStory(wpPost: any): Story {
     readingTime: wpPost.readingTime || estimateReadingTime(wpPost.content),
     featured: wpPost.featured || false,
     trending: wpPost.trending || false,
-    tags: wpPost.tags || [],
+    tags: tagsList,
     location: wpPost.location || undefined,
     timeline: wpPost.timeline || undefined,
   };
