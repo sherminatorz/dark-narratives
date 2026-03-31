@@ -1,8 +1,20 @@
 import { Story, Category, PaginatedResult } from '@/types';
 import { stories, categories } from './mock-data';
+import { fetchGraphQL } from './graphql-client';
+import { transformWPPostToStory, transformWPCategoryToCategory } from './wp-transform';
+import {
+  GET_POSTS_QUERY,
+  GET_POST_BY_SLUG_QUERY,
+  GET_ALL_SLUGS_QUERY,
+  GET_CATEGORIES_QUERY,
+  GET_CATEGORY_BY_SLUG_QUERY,
+  GET_RELATED_POSTS_QUERY,
+  GET_FEATURED_POSTS_QUERY,
+  GET_TRENDING_POSTS_QUERY,
+} from './graphql-queries';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-const WP_API_URL = process.env.NEXT_PUBLIC_WP_API_URL || 'https://your-wordpress-site.com/wp-json/wp/v2';
+const USE_WORDPRESS = process.env.NEXT_PUBLIC_USE_WORDPRESS === 'true';
 
 // ─── Revalidation defaults ─────────────────────────────────────────────────────
 const REVALIDATE_STORIES = 60; // seconds
@@ -19,17 +31,45 @@ export async function getStories(options?: {
 }): Promise<PaginatedResult<Story>> {
   const { page = 1, perPage = 9, category, featured, trending } = options || {};
 
-  // ── WordPress version (uncomment when connecting to WP): ──
-  // const params = new URLSearchParams({ page: String(page), per_page: String(perPage) });
-  // if (category) params.set('categories', category);
-  // if (featured) params.set('meta_key', 'featured');
-  // const res = await fetch(`${WP_API_URL}/posts?${params}`, {
-  //   next: { revalidate: REVALIDATE_STORIES },
-  // });
-  // const data = await res.json();
-  // const total = parseInt(res.headers.get('X-WP-Total') || '0');
-  // return { data: data.map(transformWPPost), total, page, perPage, totalPages: Math.ceil(total / perPage) };
+  // Use WordPress GraphQL if enabled
+  if (USE_WORDPRESS) {
+    try {
+      const categoryId = category ? await getCategoryIdBySlug(category) : null;
+      
+      const response = await fetchGraphQL<any>(GET_POSTS_QUERY, {
+        first: perPage,
+        categoryIn: categoryId ? [categoryId] : null,
+      }, {
+        revalidate: REVALIDATE_STORIES,
+        tags: ['posts', category || 'all'],
+      });
 
+      const posts = response.posts?.edges?.map((edge: any) => transformWPPostToStory(edge.node)) || [];
+      const total = response.posts?.pageInfo?.total || 0;
+      const totalPages = Math.ceil(total / perPage);
+
+      // Filter by featured/trending if needed (since GraphQL query filtering may not work the same)
+      let filtered = posts;
+      if (featured !== undefined) {
+        filtered = filtered.filter((s) => s.featured === featured);
+      }
+      if (trending !== undefined) {
+        filtered = filtered.filter((s) => s.trending === trending);
+      }
+
+      return {
+        data: filtered.slice(0, perPage),
+        total,
+        page,
+        perPage,
+        totalPages,
+      };
+    } catch (error) {
+      console.error('Error fetching from WordPress GraphQL, falling back to mock data:', error);
+    }
+  }
+
+  // Fallback to mock data
   let filtered = [...stories];
 
   if (category) {
@@ -51,34 +91,65 @@ export async function getStories(options?: {
 }
 
 export async function getStoryBySlug(slug: string): Promise<Story | null> {
-  // WordPress version:
-  // const res = await fetch(`${WP_API_URL}/posts?slug=${slug}&_embed`, {
-  //   next: { revalidate: REVALIDATE_STORIES },
-  // });
-  // const data = await res.json();
-  // return data.length > 0 ? transformWPPost(data[0]) : null;
+  if (USE_WORDPRESS) {
+    try {
+      const response = await fetchGraphQL<any>(GET_POST_BY_SLUG_QUERY, { slug }, {
+        revalidate: REVALIDATE_STORIES,
+        tags: ['post', slug],
+      });
+      return response.postBy ? transformWPPostToStory(response.postBy) : null;
+    } catch (error) {
+      console.error('Error fetching post from WordPress GraphQL:', error);
+    }
+  }
 
   return stories.find((s) => s.slug === slug) || null;
 }
 
 export async function getAllStorySlugs(): Promise<string[]> {
-  // WordPress version:
-  // const res = await fetch(`${WP_API_URL}/posts?per_page=100&_fields=slug`, {
-  //   next: { revalidate: REVALIDATE_CATEGORIES },
-  // });
-  // const data = await res.json();
-  // return data.map((p: any) => p.slug);
+  if (USE_WORDPRESS) {
+    try {
+      const allSlugs: string[] = [];
+      let after: string | null = null;
+      let hasNextPage = true;
+
+      while (hasNextPage) {
+        const response = await fetchGraphQL<any>(GET_ALL_SLUGS_QUERY, { after }, {
+          revalidate: REVALIDATE_CATEGORIES,
+          tags: ['all-slugs'],
+        });
+
+        allSlugs.push(...(response.posts?.edges?.map((edge: any) => edge.node.slug) || []));
+        hasNextPage = response.posts?.pageInfo?.hasNextPage || false;
+        after = response.posts?.pageInfo?.endCursor || null;
+      }
+
+      return allSlugs;
+    } catch (error) {
+      console.error('Error fetching slugs from WordPress GraphQL:', error);
+    }
+  }
 
   return stories.map((s) => s.slug);
 }
 
 export async function getRelatedStories(story: Story, limit: number = 3): Promise<Story[]> {
-  // WordPress version:
-  // const res = await fetch(
-  //   `${WP_API_URL}/posts?categories=${story.category.id}&exclude=${story.id}&per_page=${limit}`,
-  //   { next: { revalidate: REVALIDATE_STORIES } }
-  // );
-  // return (await res.json()).map(transformWPPost);
+  if (USE_WORDPRESS) {
+    try {
+      const response = await fetchGraphQL<any>(GET_RELATED_POSTS_QUERY, {
+        categoryIn: [story.category.id],
+        notIn: [story.id],
+        first: limit,
+      }, {
+        revalidate: REVALIDATE_STORIES,
+        tags: ['related-stories', story.id],
+      });
+
+      return response.posts?.edges?.map((edge: any) => transformWPPostToStory(edge.node)) || [];
+    } catch (error) {
+      console.error('Error fetching related stories from WordPress GraphQL:', error);
+    }
+  }
 
   return stories
     .filter((s) => s.id !== story.id && s.category.slug === story.category.slug)
@@ -88,22 +159,37 @@ export async function getRelatedStories(story: Story, limit: number = 3): Promis
 // ─── Categories ─────────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<Category[]> {
-  // WordPress version:
-  // const res = await fetch(`${WP_API_URL}/categories?per_page=100`, {
-  //   next: { revalidate: REVALIDATE_CATEGORIES },
-  // });
-  // return (await res.json()).map(transformWPCategory);
+  if (USE_WORDPRESS) {
+    try {
+      const response = await fetchGraphQL<any>(GET_CATEGORIES_QUERY, {}, {
+        revalidate: REVALIDATE_CATEGORIES,
+        tags: ['categories'],
+      });
+
+      return response.categories?.edges?.map((edge: any) =>
+        transformWPCategoryToCategory(edge.node)
+      ) || [];
+    } catch (error) {
+      console.error('Error fetching categories from WordPress GraphQL:', error);
+    }
+  }
 
   return categories;
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  // WordPress version:
-  // const res = await fetch(`${WP_API_URL}/categories?slug=${slug}`, {
-  //   next: { revalidate: REVALIDATE_CATEGORIES },
-  // });
-  // const data = await res.json();
-  // return data.length > 0 ? transformWPCategory(data[0]) : null;
+  if (USE_WORDPRESS) {
+    try {
+      const response = await fetchGraphQL<any>(GET_CATEGORY_BY_SLUG_QUERY, { slug }, {
+        revalidate: REVALIDATE_CATEGORIES,
+        tags: ['category', slug],
+      });
+
+      return response.categoryBy ? transformWPCategoryToCategory(response.categoryBy) : null;
+    } catch (error) {
+      console.error('Error fetching category from WordPress GraphQL:', error);
+    }
+  }
 
   return categories.find((c) => c.slug === slug) || null;
 }
@@ -116,14 +202,8 @@ export async function searchStories(
 ): Promise<PaginatedResult<Story>> {
   const { page = 1, perPage = 9 } = options || {};
 
-  // WordPress version:
-  // const res = await fetch(
-  //   `${WP_API_URL}/posts?search=${encodeURIComponent(query)}&page=${page}&per_page=${perPage}`,
-  //   { next: { revalidate: REVALIDATE_STORIES } }
-  // );
-  // const data = await res.json();
-  // const total = parseInt(res.headers.get('X-WP-Total') || '0');
-  // return { data: data.map(transformWPPost), total, page, perPage, totalPages: Math.ceil(total / perPage) };
+  // TODO: Implement WordPress GraphQL search
+  // For now, using mock data search
 
   const q = query.toLowerCase();
   const filtered = stories.filter(
@@ -142,44 +222,52 @@ export async function searchStories(
   return { data, total, page, perPage, totalPages };
 }
 
+// ─── Featured & Trending ────────────────────────────────────────────────────────
+
+export async function getFeaturedStories(limit: number = 1): Promise<Story[]> {
+  if (USE_WORDPRESS) {
+    try {
+      const response = await fetchGraphQL<any>(GET_FEATURED_POSTS_QUERY, { first: limit }, {
+        revalidate: REVALIDATE_STORIES,
+        tags: ['featured-stories'],
+      });
+
+      return response.posts?.edges?.map((edge: any) => transformWPPostToStory(edge.node)) || [];
+    } catch (error) {
+      console.error('Error fetching featured stories from WordPress GraphQL:', error);
+    }
+  }
+
+  return stories.filter((s) => s.featured).slice(0, limit);
+}
+
+export async function getTrendingStories(limit: number = 6): Promise<Story[]> {
+  if (USE_WORDPRESS) {
+    try {
+      const response = await fetchGraphQL<any>(GET_TRENDING_POSTS_QUERY, { first: limit }, {
+        revalidate: REVALIDATE_STORIES,
+        tags: ['trending-stories'],
+      });
+
+      return response.posts?.edges?.map((edge: any) => transformWPPostToStory(edge.node)) || [];
+    } catch (error) {
+      console.error('Error fetching trending stories from WordPress GraphQL:', error);
+    }
+  }
+
+  return stories.filter((s) => s.trending).slice(0, limit);
+}
+
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
 export function getSiteUrl(): string {
   return SITE_URL;
 }
 
-// ── WordPress data transformers (uncomment when connecting to WP): ──
-//
-// function transformWPPost(post: any): Story {
-//   return {
-//     id: String(post.id),
-//     slug: post.slug,
-//     title: post.title.rendered,
-//     excerpt: post.excerpt.rendered.replace(/<[^>]*>/g, ''),
-//     content: post.content.rendered,
-//     image: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-//     category: transformWPCategory(post._embedded?.['wp:term']?.[0]?.[0]),
-//     author: {
-//       id: String(post._embedded?.author?.[0]?.id),
-//       name: post._embedded?.author?.[0]?.name || 'Unknown',
-//       avatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || '',
-//       bio: post._embedded?.author?.[0]?.description || '',
-//     },
-//     publishedAt: post.date,
-//     readingTime: Math.ceil(post.content.rendered.split(/\s+/).length / 200),
-//     featured: post.meta?.featured || false,
-//     trending: post.meta?.trending || false,
-//     tags: post._embedded?.['wp:term']?.[1]?.map((t: any) => t.slug) || [],
-//   };
-// }
-//
-// function transformWPCategory(cat: any): Category {
-//   return {
-//     id: String(cat?.id || ''),
-//     slug: cat?.slug || '',
-//     name: cat?.name || '',
-//     description: cat?.description || '',
-//     image: cat?.acf?.image || '',
-//     storyCount: cat?.count || 0,
-//   };
-// }
+/**
+ * Get WordPress category ID by slug (helper for getStories)
+ */
+async function getCategoryIdBySlug(slug: string): Promise<string | null> {
+  const category = await getCategoryBySlug(slug);
+  return category?.id || null;
+}
