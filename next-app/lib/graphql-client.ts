@@ -9,14 +9,16 @@ interface GraphQLResponse<T> {
 }
 
 // Validate WordPress GraphQL URL is configured
-const WP_GRAPHQL_URL: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_URL;
+const graphqlUrl = process.env.NEXT_PUBLIC_WP_GRAPHQL_URL;
 
-if (!WP_GRAPHQL_URL) {
+if (!graphqlUrl) {
   throw new Error(
     'NEXT_PUBLIC_WP_GRAPHQL_URL environment variable is not set. ' +
     'Please add it to your .env.local file.'
   );
 }
+
+const WP_GRAPHQL_URL: string = graphqlUrl;
 
 /**
  * Execute a GraphQL query against WordPress
