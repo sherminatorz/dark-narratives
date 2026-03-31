@@ -12,20 +12,11 @@ import {
   GET_TRENDING_POSTS_QUERY,
 } from './graphql-queries';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-const WP_GRAPHQL_URL = process.env.NEXT_PUBLIC_WP_GRAPHQL_URL;
-
-// Validate WordPress configuration
-if (!WP_GRAPHQL_URL) {
-  throw new Error(
-    'NEXT_PUBLIC_WP_GRAPHQL_URL environment variable is not set. ' +
-    'Add it to your .env.local file.'
-  );
-}
+const SITE_URL: string = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
 
 // ─── Revalidation defaults ─────────────────────────────────────────────────────
-const REVALIDATE_STORIES = 60; // seconds
-const REVALIDATE_CATEGORIES = 3600; // seconds
+const REVALIDATE_STORIES: number = 60; // seconds
+const REVALIDATE_CATEGORIES: number = 3600; // seconds
 
 // ─── Stories ────────────────────────────────────────────────────────────────────
 

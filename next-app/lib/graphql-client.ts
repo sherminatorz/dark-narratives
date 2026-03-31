@@ -8,10 +8,14 @@ interface GraphQLResponse<T> {
   errors?: Array<{ message: string }>;
 }
 
-const WP_GRAPHQL_URL = process.env.NEXT_PUBLIC_WP_GRAPHQL_URL;
+// Validate WordPress GraphQL URL is configured
+const WP_GRAPHQL_URL: string = process.env.NEXT_PUBLIC_WP_GRAPHQL_URL;
 
 if (!WP_GRAPHQL_URL) {
-  throw new Error('NEXT_PUBLIC_WP_GRAPHQL_URL environment variable is not set');
+  throw new Error(
+    'NEXT_PUBLIC_WP_GRAPHQL_URL environment variable is not set. ' +
+    'Please add it to your .env.local file.'
+  );
 }
 
 /**
@@ -25,6 +29,10 @@ export async function fetchGraphQL<T = any>(
     tags?: string[];
   }
 ): Promise<T> {
+  if (!query) {
+    throw new Error('GraphQL query is required');
+  }
+
   const { revalidate = 60, tags = [] } = options || {};
 
   const response = await fetch(WP_GRAPHQL_URL, {
