@@ -49,17 +49,17 @@ export async function getStories(options?: {
       tags: ['posts', category || 'all'],
     });
 
-    const posts = response.posts?.edges?.map((edge: any) => transformWPPostToStory(edge.node)) || [];
+    const posts: Story[] = response.posts?.edges?.map((edge: any) => transformWPPostToStory(edge.node)) || [];
     const total = response.posts?.pageInfo?.total || 0;
     const totalPages = Math.ceil(total / perPage);
 
     // Filter by featured/trending if needed
-    let filtered = posts;
+    let filtered: Story[] = posts;
     if (featured !== undefined) {
-      filtered = filtered.filter((s) => s.featured === featured);
+      filtered = filtered.filter((s: Story) => s.featured === featured);
     }
     if (trending !== undefined) {
-      filtered = filtered.filter((s) => s.trending === trending);
+      filtered = filtered.filter((s: Story) => s.trending === trending);
     }
 
     return {
